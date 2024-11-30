@@ -5,9 +5,10 @@ using System.Data.SqlClient;
 
 namespace oanh
 {
-    internal class Database
+    class Database
     {
-        private static SqlConnection connection = new SqlConnection(@"Data Source=DESKTOP-0026BRR\SQLEXPRESS;Initial Catalog=QLCHQA;Integrated Security=True;TrustServerCertificate=True");
+        private static SqlConnection connection = new SqlConnection(
+            @"Data Source=PTKDrake-PC;Initial Catalog=QLCHQA;Integrated Security=True;Encrypt=False");
 
         public static void Execute(string sql, Dictionary<string, object> parameter = null)
         {
@@ -19,18 +20,8 @@ namespace oanh
                 {
                     command.Parameters.Add(new SqlParameter(key, parameter[key]));
                 }
-                try
-                {
-                    command.ExecuteNonQuery();
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-                finally
-                {
-                    connection.Close();
-                }
+
+                command.ExecuteNonQuery();
             }
         }
 
@@ -45,6 +36,7 @@ namespace oanh
                     command.Parameters.Add(new SqlParameter(key, parameter[key]));
                 }
             }
+
             SqlDataAdapter adapter = new SqlDataAdapter(command);
             DataTable table = new DataTable();
             adapter.Fill(table);
