@@ -32,170 +32,41 @@ namespace oanh
 
         public void LoadProductsIntoComboBox()
         {
-            try
-            {
-                comboBox1.Items.Clear();
-                DataTable productTable = Database.Query("Select IDMATHANG, TENMATHANG, GIA from MATHANG order by TENMATHANG");
-                foreach (DataRow row in productTable.Rows)
-                {
-                    ProductItem product = new ProductItem
-                    {
-                        Id = Convert.ToInt32(row["IDMATHANG"]),
-                        Name = row["TENMATHANG"].ToString(),
-                        Price = Convert.ToDouble(row["GIA"])
-                    };
-
-                    comboBox1.Items.Add(product);
-                }
-                comboBox1.DisplayMember = "Name";
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi: " + ex.Message);
-            }
+            comboBox1.DataSource = null;
+            DataTable productTable =
+                Database.Query("Select IDMATHANG, TENMATHANG, GIA from MATHANG order by TENMATHANG");
+            comboBox1.DataSource = productTable;
+            comboBox1.ValueMember = "IDMATHANG";
+            comboBox1.DisplayMember = "TENMATHANG";
         }
 
         public void LoadStaffIntoComboBox()
         {
-            try
-            {
-                comboBox2.Items.Clear();
-                DataTable staffTable = Database.Query("Select TENNHANVIEN from NHANVIEN order by TENNHANVIEN");
-                foreach (DataRow row in staffTable.Rows)
-                {
-                    comboBox2.Items.Add(row["TENNHANVIEN"].ToString());
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi: " + ex.Message);
-            }
-        }
-
-
-        public class ProductItem
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-
-            public double Price { get; set; }
-
-            public override string ToString()
-            {
-                return Name;
-            }
-        }
-
-        private void comboBox1_TextChanged(object sender, EventArgs e)
-        {
-            string searchName = comboBox1.Text.Trim();
-            tbx_PRICE.Clear();
-
-            if (string.IsNullOrEmpty(searchName) && comboBox1.SelectedIndex == -1)
-            {
-                LoadProductsIntoComboBox();
-                return;
-            }
-
-            if (searchName.Length < 2)
-                return;
-
-            try
-            {
-                comboBox1.Items.Clear();
-                Dictionary<string, object> parameters = new Dictionary<string, object>();
-                parameters.Add("@Name", searchName);
-                DataTable productTable = Database.Query("SELECT IDMATHANG, TENMATHANG, GIA FROM MATHANG WHERE TENMATHANG LIKE '%' + @Name + '%'", parameters);
-
-                foreach (DataRow row in productTable.Rows)
-                {
-                    ProductItem product = new ProductItem
-                    {
-                        Id = Convert.ToInt32(row["IDMATHANG"]),
-                        Name = row["TENMATHANG"].ToString(),
-                        Price = Convert.ToDouble(row["GIA"])
-                    };
-                    comboBox1.Items.Add(product);
-                }
-                comboBox1.DisplayMember = "Name";
-                comboBox1.DroppedDown = true;
-                comboBox1.IntegralHeight = true;
-                comboBox1.SelectionStart = comboBox1.Text.Length;
-                comboBox1.SelectionLength = 0;
-                Cursor.Current = Cursors.Default;
-                if (comboBox1.Items.Count == 0)
-                {
-                    errorProvider1.SetError(comboBox1, "Không có sản phẩm với tên được nhập");
-                    return;
-                }
-                else
-                {
-                    errorProvider1.SetError(comboBox1, "");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi: " + ex.Message);
-            }
+            comboBox2.DataSource = null;
+            DataTable staffTable = Database.Query("Select IDNHANVIEN, TENNHANVIEN from NHANVIEN order by TENNHANVIEN");
+            comboBox2.DataSource = staffTable;
+            comboBox2.ValueMember = "IDNHANVIEN";
+            comboBox2.DisplayMember = "TENNHANVIEN";
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboBox1.SelectedItem is ProductItem selectedProduct)
-            {
-                double selectedProductPrice = selectedProduct.Price;
-                tbx_PRICE.Text = selectedProductPrice.ToString();
-            }
+            DataRowView item = comboBox1.SelectedItem as DataRowView;
+            if (item == null) return;
+            double selectedProductPrice = (double)item["GIA"];
+            tbx_PRICE.Text = selectedProductPrice.ToString();
         }
 
-        private void comboBox2_TextChanged(object sender, EventArgs e)
+        private void UpdateTotalPrice()
         {
-            string searchName = comboBox2.Text.Trim();
-
-            if (string.IsNullOrEmpty(searchName) && comboBox2.SelectedIndex == -1)
+            double total = 0;
+            foreach (DataGridViewRow row in dataGridView1.Rows)
             {
-                LoadStaffIntoComboBox();
-                return;
+                if (row.IsNewRow) break;
+                total += Double.Parse(row.Cells[4].Value.ToString());
             }
-
-            if (searchName.Length < 2)
-                return;
-
-            try
-            {
-                comboBox2.Items.Clear();
-                Dictionary<string, object> parameters = new Dictionary<string, object>();
-                parameters.Add("@Name", searchName);
-                DataTable nhanVienTable = Database.Query(
-                    "SELECT TENNHANVIEN FROM NHANVIEN WHERE TENNHANVIEN LIKE '%' + @Name + '%'", parameters);
-                foreach (DataRow row in nhanVienTable.Rows)
-                {
-                    comboBox2.Items.Add(row["TENNHANVIEN"].ToString());
-                }
-
-                comboBox2.DisplayMember = "TENNHANVIEN";
-                comboBox2.DroppedDown = true;
-                comboBox2.IntegralHeight = true;
-                comboBox2.SelectionStart = comboBox2.Text.Length;
-                comboBox2.SelectionLength = 0;
-                Cursor.Current = Cursors.Default;
-                if (comboBox2.Items.Count == 0)
-                {
-                    errorProvider1.SetError(comboBox2, "Không có nhân viên với tên được nhập");
-                    return;
-                }
-                else
-                {
-                    errorProvider1.SetError(comboBox2, "");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi: " + ex.Message);
-            }
+            tbx_TOTAL.Text = total.ToString();
         }
-
-        public int Pay = 0;
 
         private void btn_ADD_Click(object sender, EventArgs e)
         {
@@ -204,6 +75,7 @@ namespace oanh
                 MessageBox.Show("Vui lòng chọn sản phẩm!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
             if (nud_QUANTITY.Value == 0)
             {
                 MessageBox.Show("Vui lòng chọn số lượng!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -212,16 +84,15 @@ namespace oanh
 
             try
             {
-                ProductItem selectedProduct = (ProductItem)comboBox1.SelectedItem;
-                string productID = selectedProduct.Id.ToString();
-                string productName = selectedProduct.Name;
+                DataRowView selectedProduct = comboBox1.SelectedItem as DataRowView;
+                string productID = selectedProduct["IDMATHANG"].ToString();
+                string productName = selectedProduct["TENMATHANG"].ToString();
                 string productQuantity = nud_QUANTITY.Value.ToString();
-                string productPrice = selectedProduct.Price.ToString();
-                string Total = (Decimal.ToDouble(nud_QUANTITY.Value) * selectedProduct.Price).ToString();
+                string productPrice = selectedProduct["GIA"].ToString();
+                double Total = (double)nud_QUANTITY.Value * (double)selectedProduct["GIA"];
                 dataGridView1.Rows.Add(productID, productName, productQuantity, productPrice, Total);
                 ConfigureDataGridView();
-                Pay += Int32.Parse(Total);
-                tbx_TOTAL.Text = Pay.ToString();
+                UpdateTotalPrice();
             }
             catch (Exception ex)
             {
@@ -236,6 +107,7 @@ namespace oanh
                 try
                 {
                     dataGridView1.Rows.RemoveAt(e.RowIndex);
+                    UpdateTotalPrice();
                 }
                 catch (Exception ex)
                 {
@@ -255,12 +127,15 @@ namespace oanh
                 errorProvider1.SetError(tbx_CUSTOMER_NAME, "Tên không được để trống");
                 return false;
             }
+
             if (tbx_CUSTOMER_ADDRESS.TextLength == 0)
             {
                 errorProvider1.SetError(tbx_CUSTOMER_ADDRESS, "Địa chỉ không được để trống");
                 return false;
             }
-            if (tbx_CUSTOMER_NUMBER.TextLength != 10 || !tbx_CUSTOMER_NUMBER.Text.All(Char.IsDigit) || !tbx_CUSTOMER_NUMBER.Text.StartsWith("0"))
+
+            if (tbx_CUSTOMER_NUMBER.TextLength != 10 || !tbx_CUSTOMER_NUMBER.Text.All(Char.IsDigit) ||
+                !tbx_CUSTOMER_NUMBER.Text.StartsWith("0"))
             {
                 errorProvider1.SetError(tbx_CUSTOMER_NUMBER, "Số điện thoại không hợp lệ");
                 return false;
@@ -318,7 +193,6 @@ namespace oanh
             {
                 dataGridView1.Columns.Remove("DeleteColumn");
             }
-
         }
 
         public static string CustomerName;

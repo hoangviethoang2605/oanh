@@ -98,13 +98,14 @@
             // 
             // comboBox2
             // 
+            this.comboBox2.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.comboBox2.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Location = new System.Drawing.Point(92, 27);
             this.comboBox2.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(202, 21);
             this.comboBox2.TabIndex = 7;
-            this.comboBox2.TextChanged += new System.EventHandler(this.comboBox2_TextChanged);
             // 
             // tbx_CUSTOMER_NUMBER
             // 
@@ -222,6 +223,7 @@
             this.tbx_PRICE.Location = new System.Drawing.Point(417, 26);
             this.tbx_PRICE.Margin = new System.Windows.Forms.Padding(2);
             this.tbx_PRICE.Name = "tbx_PRICE";
+            this.tbx_PRICE.ReadOnly = true;
             this.tbx_PRICE.Size = new System.Drawing.Size(148, 20);
             this.tbx_PRICE.TabIndex = 4;
             // 
@@ -257,6 +259,8 @@
             // 
             // dataGridView1
             // 
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -312,6 +316,8 @@
             // 
             // comboBox1
             // 
+            this.comboBox1.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+            this.comboBox1.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Location = new System.Drawing.Point(128, 22);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(2);
@@ -319,7 +325,6 @@
             this.comboBox1.Size = new System.Drawing.Size(166, 21);
             this.comboBox1.TabIndex = 3;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
-            this.comboBox1.TextChanged += new System.EventHandler(this.comboBox1_TextChanged);
             // 
             // label11
             // 
